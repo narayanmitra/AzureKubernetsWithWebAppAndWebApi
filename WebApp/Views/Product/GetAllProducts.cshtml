@@ -1,0 +1,30 @@
+﻿@model IEnumerable<MyClassLibaray.Entity.Product>
+@{
+    ViewBag.Title = "GetAllProducts";
+}
+
+<h2>GetAllProducts</h2>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ProductName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ProductDesc)
+        </th>
+         <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductDesc)
+            </td>
+        </tr>
+    }
+
+</table>

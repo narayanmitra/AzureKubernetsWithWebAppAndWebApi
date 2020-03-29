@@ -1,0 +1,36 @@
+# FROM microsoft/dotnet:2.1-sdk-nanoserver-1803 AS build
+# WORKDIR /app
+# # Copy csproj and restore as distinct layers
+# COPY *.csproj ./
+# RUN dotnet restore
+# # Copy everything else and build
+# COPY . ./
+# RUN dotnet publish -c Release -o out
+# # Build runtime image
+# FROM microsoft/dotnet:2.1-aspnetcore-runtime-nanoserver-1803 AS base
+# WORKDIR /app
+# EXPOSE 80
+# COPY --from=build /app/out ./
+# ENTRYPOINT ["dotnet", "WebApiService.dll"]
+FROM microsoft/dotnet:2.1-aspnetcore-runtime AS base
+WORKDIR /app
+EXPOSE 80
+
+FROM microsoft/dotnet:2.1-sdk AS build
+WORKDIR /src
+# Copy csproj and restore as distinct layers
+COPY ["WebApp/WebApp.csproj", "WebApp/"]
+COPY ["MyClassLibaray/MyClassLibaray.csproj", "MyClassLibaray/"]
+RUN dotnet restore "WebApp/WebApp.csproj"
+# Copy everything else and build
+COPY . .
+WORKDIR "/src/WebApp"
+RUN dotnet build "WebApp.csproj" -c Release -o /app
+# publish
+FROM build AS publish
+RUN dotnet publish "WebApp.csproj" -c Release -o /app
+# deploy
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app .
+ENTRYPOINT ["dotnet", "WebApp.dll"]

@@ -1,0 +1,36 @@
+version: "3.4"
+services:
+  webapplication:
+    build: 
+      dockerfile: WebDockerfile
+      context: .
+    image: webapplication:latest
+    environment:
+      #Passing enviornment variable to docker image
+      - serviceUrl:http://webapiservice/
+    ports:
+      - "8081:80"
+    #volumes: 
+      #Mapping host folder to docker image folder (Here host folder is -ProductApp/bin/pub of current directory and docker image folder is -/app)
+    # - ./WebApp/bin/pub/:/app
+    container_name: webapplication
+    depends_on:
+      - webapiservice 
+  webapiservice:
+    build: 
+      dockerfile: ApiDockerfile
+      context: .  
+    image: webapiservice:latest    
+    environment:
+      #Passing enviornment variable to docker image
+      - dbHost:sqldb
+      - dbPort:1433
+      - dbName:TestDB
+      - dbUser:sa
+      - dbPassword:Maa@2267
+    ports:
+        - "8080:80"
+    #volumes: 
+      #Mapping host folder to docker image folder (Here host folder is -ProductService/bin/pub of current directory and docker image folder is -/app)
+    # - ./WebApiService/bin/pub/:/app
+    container_name: webapiservice
